@@ -10,6 +10,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
 import com.jiaxing.mapper.DataFilterMapper;
+import com.jiaxing.reducer.DataFilterReducer;
 
 public class Main {
 	public static void main(String[] args) throws Exception{
@@ -23,9 +24,11 @@ public class Main {
 		Job job = new Job(conf, "DataFilter");
 		job.setJarByClass(Main.class);
 		job.setMapperClass(DataFilterMapper.class);
+		job.setReducerClass(DataFilterReducer.class);
 		//set input format to sequence file
 		job.setInputFormatClass(SequenceFileInputFormat.class);
-		
+		job.setOutputKeyClass(Text.class);
+		job.setOutputValueClass(Text.class);
 		FileInputFormat.addInputPath(job, new Path(otherArgs[0]));
 		FileOutputFormat.setOutputPath(job, new Path(otherArgs[1]));
 		System.exit(job.waitForCompletion(true)? 0 : 1);
