@@ -1,6 +1,7 @@
 package com.jiaxing.main;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -23,20 +24,33 @@ public class PageRankMain {
 			System.err.println("Usage: input output");
 			System.exit(2);
 		}
-		
-		Job job = new Job(conf, "PageRank");
-		job.setJarByClass(PageRankMain.class);
-		job.setMapperClass(PageRankMapper.class);
-		job.setReducerClass(PageRankReducer.class);
-		//set input format to sequence file
-		//job.setInputFormatClass(T.class);
-		
-		job.setOutputKeyClass(Text.class);
-		job.setOutputValueClass(Text.class);
-		FileInputFormat.addInputPath(job, new Path(otherArgs[0]));
-		FileOutputFormat.setOutputPath(job, new Path(otherArgs[1]));
-		
-		System.exit(job.waitForCompletion(true)? 0 : 1);
+		FileSystem fs = FileSystem.get(conf);
+		for(int i = 1; i <= 10; ++i){
+			Job job = new Job(conf, "PageRank");
+			job.setJarByClass(PageRankMain.class);
+			job.setMapperClass(PageRankMapper.class);
+			job.setReducerClass(PageRankReducer.class);
+			//set input format to sequence file
+			//job.setInputFormatClass(T.class);
+			
+			job.setOutputKeyClass(Text.class);
+			job.setOutputValueClass(Text.class);
+			Path inputPath;
+			if(i == 1){
+				inputPath = new Path(otherArgs[0]);
+			}else{
+				inputPath = new Path(otherArgs[1] + (i - 1));
+			}
+			FileInputFormat.addInputPath(job, inputPath);
+			FileOutputFormat.setOutputPath(job, new Path(otherArgs[1] + i));
+			job.waitForCompletion(true);
+			/*
+			if(i > 1 && fs.exists(inputPath)){
+				fs.delete(inputPath);
+			}
+			*/
+			
+		}
 		
 	}
 }

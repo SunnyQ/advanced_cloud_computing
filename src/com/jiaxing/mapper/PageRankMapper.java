@@ -23,10 +23,6 @@ public class PageRankMapper extends Mapper<LongWritable, Text, Text, Text>{
 		for(String link : links){
 			outputKey.set(link);
 			context.write(outputKey, outputValue);
-			System.out.println("---------------");
-			System.out.println(outputKey.toString());
-			System.out.println(outputValue.toString());
-			System.out.println("---------------");
 		}
 		outputKey.set(array[0]);
 		outputValue.set("-1\t" + array[2]);
