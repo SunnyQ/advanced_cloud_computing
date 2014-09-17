@@ -23,13 +23,17 @@ public class PageRankReducer extends Reducer<Text, Text, Text, Text>{
 				p += Float.parseFloat(array[0]);
 			}
 		}
-		sb.append(p);
+		sb.append(getPageRank(p, 0.85f));
 		sb.append("\t");
 		sb.append(node.toString());
 		outputValue.set(sb.toString());
 		context.write(key, outputValue);
 		sb.setLength(0);
 		p = 0;
+	}
+	
+	public float getPageRank(float p, float damp){
+		return (1 - damp) + damp * p;
 	}
 	
 }
