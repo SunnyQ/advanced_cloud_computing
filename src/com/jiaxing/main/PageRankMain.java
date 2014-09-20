@@ -60,9 +60,11 @@ public class PageRankMain {
 			FileOutputFormat.setOutputPath(job, outputPath);
 			job.waitForCompletion(true);
 			FileSystem fs = FileSystem.get(URI.create(inputPath.toString()), conf);
+			/*
 			if(i > 1 && fs.exists(inputPath)){
 				fs.delete(inputPath);
 			}
+			*/
 		}
 		
 	}

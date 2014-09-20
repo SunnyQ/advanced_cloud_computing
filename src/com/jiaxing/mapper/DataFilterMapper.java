@@ -23,7 +23,7 @@ public class DataFilterMapper extends Mapper<Text, Text, Text, Text>{
 		for(int i = 0; i < links.size(); ++i){
 			sb.append(links.get(i));
 			if(i != links.size() - 1){
-				sb.append(",,,,");
+				sb.append(",");
 			}
 		}
 		outputText.set(sb.toString());

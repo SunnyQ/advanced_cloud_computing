@@ -22,7 +22,7 @@ public class PageRankReducer extends Reducer<Text, Text, Text, Text>{
 		
 		for(Text value : values){
 			String tempValue = value.toString();
-			String[] array = tempValue.toString().split(",,,,", 2);
+			String[] array = tempValue.toString().split("\\s+", 2);
 			if(array[0].equals("-1")){
 				if(array.length > 1){
 					node = array[1];
@@ -36,18 +36,18 @@ public class PageRankReducer extends Reducer<Text, Text, Text, Text>{
 		}
 		
 		sb.append(getPageRank(p, 0.85));
-		sb.append(",,,,");
+		sb.append("\t");
 		if(!shouldDecode){
 			sb.append(node == null ? "" : node);
 		}else{
 			if(node == null){
 				sb.append("");
 			}else{
-				String[] links = node.split(",,,,");
+				String[] links = node.split(",");
 				for(int i = 0; i < links.length; ++i){
 					sb.append(Utils.decodeUrl(links[i]));
 					if(i != links.length - 1){
-						sb.append(",,,,");
+						sb.append(",");
 					}
 				}
 			}
