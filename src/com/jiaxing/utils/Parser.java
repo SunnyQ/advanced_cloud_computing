@@ -1,11 +1,8 @@
-package com.jiaxing.parser;
-
-import java.io.File;
+package com.jiaxing.utils;
 import java.io.IOException;
-import java.util.LinkedHashMap;
+import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
@@ -26,7 +23,8 @@ public class Parser {
 				for(JsonNode link : links){
 					if(link.has("type") && link.findValue("type").getTextValue().equals("a")){
 						if(link.has("href")){
-							resultList.add(link.findValue("href").getTextValue());
+							//encode url
+							resultList.add(Utils.encodeUrl(link.findValue("href").getTextValue()));
 						}
 					}
 				}

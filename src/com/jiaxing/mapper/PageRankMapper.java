@@ -15,18 +15,23 @@ public class PageRankMapper extends Mapper<LongWritable, Text, Text, Text>{
 	protected void map(LongWritable key, Text value,
 			Context context)
 			throws IOException, InterruptedException {
-		String[] array = value.toString().split("\\s+", 3);
-		
-		float p = Float.parseFloat(array[1]);
-		String[] links = array[2].split(",");
-		outputValue.set(String.valueOf(p / links.length));
-		for(String link : links){
-			outputKey.set(link);
-			context.write(outputKey, outputValue);
+		String[] array = value.toString().trim().split("\\s+", 2);
+		String[] links = array[1].split(",,,,", 2);
+		if(links.length > 1 && links[1].length() > 0){
+			float p = Float.parseFloat(links[0]);
+			String[] outputLinks = links[1].split(",,,,");
+			outputValue.set(String.valueOf(p / outputLinks.length));
+			for(String link : outputLinks){
+				outputKey.set(link);
+				context.write(outputKey, outputValue);
+			}
 		}
 		outputKey.set(array[0]);
-		outputValue.set("-1\t" + array[2]);
+		if(links.length > 1){
+			outputValue.set("-1,,,," + links[1]);
+		}else{
+			outputValue.set("-1,,,,");
+		}
 		context.write(outputKey, outputValue);//kep the structure of the network
 	}
-	
 }

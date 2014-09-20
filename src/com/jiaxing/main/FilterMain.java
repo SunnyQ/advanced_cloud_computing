@@ -12,7 +12,7 @@ import org.apache.hadoop.util.GenericOptionsParser;
 import com.jiaxing.mapper.DataFilterMapper;
 import com.jiaxing.reducer.DataFilterReducer;
 
-public class Main {
+public class FilterMain {
 	public static void main(String[] args) throws Exception{
 		Configuration conf = new Configuration();
 		String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
@@ -22,7 +22,7 @@ public class Main {
 		}
 		
 		Job job = new Job(conf, "DataFilter");
-		job.setJarByClass(Main.class);
+		job.setJarByClass(FilterMain.class);
 		job.setMapperClass(DataFilterMapper.class);
 		job.setReducerClass(DataFilterReducer.class);
 		//set input format to sequence file

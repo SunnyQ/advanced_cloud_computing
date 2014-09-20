@@ -13,18 +13,14 @@ public class DataFilterReducer extends Reducer<Text, Text, Text, Text>{
 	protected void reduce(Text key, Iterable<Text> values,
 			Context context)
 			throws IOException, InterruptedException {
-		sb.append("1.0\t");
+		sb.append("1.0,,,,");
 		for(Text value: values){
 			sb.append(value);
-			sb.append(",");
+			sb.append(",,,,");
 		}
-		sb.setLength(sb.length() - 1);
+		sb.setLength(sb.length() - 4);
 		outputText.set(sb.toString());
 		context.write(key, outputText);
 		sb.setLength(0);
-		++count;
-		if(count == 100){
-			System.exit(0);
-		}
 	}
 }
