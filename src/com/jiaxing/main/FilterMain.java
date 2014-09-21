@@ -33,7 +33,7 @@ public class FilterMain {
 		job.setReducerClass(DataFilterReducer.class);
 		//set input format to sequence file
 		job.setInputFormatClass(SequenceFileInputFormat.class);
-		job.setOutputFormatClass(SequenceFileOutputFormat.class);
+		//job.setOutputFormatClass(SequenceFileOutputFormat.class);
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(Text.class);
 		
@@ -55,16 +55,16 @@ public class FilterMain {
 		//set compression format
 		if(compression.equals("zlib")){
 			FileOutputFormat.setCompressOutput(job, true);
-			SequenceFileOutputFormat.setOutputCompressorClass(job, DefaultCodec.class);
+			FileOutputFormat.setOutputCompressorClass(job, DefaultCodec.class);
 		}else
 			if(compression.equals("bzip2")){
 				FileOutputFormat.setCompressOutput(job, true);
-				SequenceFileOutputFormat.setOutputCompressorClass(job, BZip2Codec.class);
+				FileOutputFormat.setOutputCompressorClass(job, BZip2Codec.class);
 			}
 			else
 				if(compression.equals("snappy")){
 					FileOutputFormat.setCompressOutput(job, true);
-					SequenceFileOutputFormat.setOutputCompressorClass(job, SnappyCodec.class);
+					FileOutputFormat.setOutputCompressorClass(job, SnappyCodec.class);
 				}
 				else{
 					//do not use compression
