@@ -4,12 +4,10 @@ import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.SequenceFile.CompressionType;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.compress.BZip2Codec;
 import org.apache.hadoop.io.compress.DefaultCodec;
 import org.apache.hadoop.io.compress.SnappyCodec;
-import org.apache.hadoop.io.compress.zlib.ZlibCompressor;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
@@ -61,12 +59,12 @@ public class FilterMain {
 		}else
 			if(compression.equals("bzip2")){
 				FileOutputFormat.setCompressOutput(job, true);
-				FileOutputFormat.setOutputCompressorClass(job, BZip2Codec.class);
+				SequenceFileOutputFormat.setOutputCompressorClass(job, BZip2Codec.class);
 			}
 			else
 				if(compression.equals("snappy")){
 					FileOutputFormat.setCompressOutput(job, true);
-					FileOutputFormat.setOutputCompressorClass(job, SnappyCodec.class);
+					SequenceFileOutputFormat.setOutputCompressorClass(job, SnappyCodec.class);
 				}
 				else{
 					//do not use compression

@@ -11,7 +11,9 @@ import org.apache.hadoop.io.compress.DefaultCodec;
 import org.apache.hadoop.io.compress.SnappyCodec;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
 import com.jiaxing.global.Global;
@@ -41,10 +43,12 @@ public class PageRankMain {
 			job.setMapperClass(PageRankMapper.class);
 			job.setReducerClass(PageRankReducer.class);
 			//set input format to sequence file
-			//job.setInputFormatClass(T.class);
+			job.setInputFormatClass(SequenceFileInputFormat.class);
+			job.setOutputFormatClass(SequenceFileOutputFormat.class);
 			
 			job.setOutputKeyClass(Text.class);
 			job.setOutputValueClass(Text.class);
+			
 			if(i == 1){
 				inputPath = new Path(otherArgs[0]);
 			}else{
@@ -67,7 +71,6 @@ public class PageRankMain {
 				fs.delete(inputPath);
 			}
 		}
-		
 	}
 	
 	
@@ -75,16 +78,16 @@ public class PageRankMain {
 		//set compression format
 		if(compression.equals("zlib")){
 			FileOutputFormat.setCompressOutput(job, true);
-			FileOutputFormat.setOutputCompressorClass(job, DefaultCodec.class);
+			SequenceFileOutputFormat.setOutputCompressorClass(job, DefaultCodec.class);
 		}else
 			if(compression.equals("bzip2")){
 				FileOutputFormat.setCompressOutput(job, true);
-				FileOutputFormat.setOutputCompressorClass(job, BZip2Codec.class);
+				SequenceFileOutputFormat.setOutputCompressorClass(job, BZip2Codec.class);
 			}
 			else
 				if(compression.equals("snappy")){
 					FileOutputFormat.setCompressOutput(job, true);
-					FileOutputFormat.setOutputCompressorClass(job, SnappyCodec.class);
+					SequenceFileOutputFormat.setOutputCompressorClass(job, SnappyCodec.class);
 				}
 				else{
 					//do not use compression
