@@ -37,8 +37,9 @@ public class PageRankReducer extends Reducer<Text, Text, Text, Text>{
 		
 		sb.append(getPageRank(p, 0.85));
 		sb.append("\t");
-		if(!shouldDecode){
+		//if(!shouldDecode){
 			sb.append(node == null ? "" : node);
+		/*
 		}else{
 			if(node == null){
 				sb.append("");
@@ -51,14 +52,14 @@ public class PageRankReducer extends Reducer<Text, Text, Text, Text>{
 					}
 				}
 			}
-		}
+		}*/
 		outputValue.set(sb.toString());
 		String strKey = key.toString();
 		if(strKey.length() > 0){
 			if(!shouldDecode){
 				context.write(key, outputValue);
 			}else{
-				key.set(Utils.decodeUrl(strKey));
+				//key.set(Utils.decodeUrl(strKey));
 				context.write(key, outputValue);
 			}
 		}

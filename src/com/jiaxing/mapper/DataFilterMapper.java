@@ -29,7 +29,7 @@ public class DataFilterMapper extends Mapper<Text, Text, Text, Text>{
 		outputText.set(sb.toString());
 		//encode url
 		outputKey.set(Utils.encodeUrl(key.toString()));
-		context.write(key, outputText);
+		context.write(outputKey, outputText);
 		sb.setLength(0);
 	}
 }

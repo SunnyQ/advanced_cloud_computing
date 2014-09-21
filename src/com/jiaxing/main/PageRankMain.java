@@ -6,17 +6,16 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.compress.BZip2Codec;
+import org.apache.hadoop.io.compress.DefaultCodec;
+import org.apache.hadoop.io.compress.SnappyCodec;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
 import com.jiaxing.global.Global;
-import com.jiaxing.mapper.DataFilterMapper;
 import com.jiaxing.mapper.PageRankMapper;
-import com.jiaxing.reducer.DataFilterReducer;
 import com.jiaxing.reducer.PageRankReducer;
 
 public class PageRankMain {
@@ -26,8 +25,8 @@ public class PageRankMain {
 	public static void main(String[] args) throws Exception{
 		Configuration conf = new Configuration();
 		String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
-		if(otherArgs.length != 3){
-			System.err.println("Usage: input output tempdir");
+		if(otherArgs.length != 4){
+			System.err.println("Usage: input output tempdir compression");
 			System.exit(2);
 		}
 		Path inputPath = null, outputPath = null;
@@ -58,14 +57,37 @@ public class PageRankMain {
 				outputPath = new Path(otherArgs[1]);
 			}
 			FileOutputFormat.setOutputPath(job, outputPath);
+			
+			//set compression
+			setCompression(job, args[3]);
+			
 			job.waitForCompletion(true);
 			FileSystem fs = FileSystem.get(URI.create(inputPath.toString()), conf);
-			/*
 			if(i > 1 && fs.exists(inputPath)){
 				fs.delete(inputPath);
 			}
-			*/
 		}
 		
+	}
+	
+	
+	public static void setCompression(Job job, String compression){
+		//set compression format
+		if(compression.equals("zlib")){
+			FileOutputFormat.setCompressOutput(job, true);
+			FileOutputFormat.setOutputCompressorClass(job, DefaultCodec.class);
+		}else
+			if(compression.equals("bzip2")){
+				FileOutputFormat.setCompressOutput(job, true);
+				FileOutputFormat.setOutputCompressorClass(job, BZip2Codec.class);
+			}
+			else
+				if(compression.equals("snappy")){
+					FileOutputFormat.setCompressOutput(job, true);
+					FileOutputFormat.setOutputCompressorClass(job, SnappyCodec.class);
+				}
+				else{
+					//do not use compression
+				}
 	}
 }
