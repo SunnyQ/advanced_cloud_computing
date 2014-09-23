@@ -16,15 +16,11 @@ public class DataFilterReducer extends Reducer<Text, Text, Text, Text>{
 			Context context)
 			throws IOException, InterruptedException {
 		sb.append("1.0\t");
-		hasLinks = false;
 		for(Text value: values){
 			sb.append(value);
 			sb.append(",");
-			hasLinks = true;
 		}
-		if(hasLinks){
-			sb.setLength(sb.length() - deliminator.length());
-		}
+		sb.setLength(sb.length() - deliminator.length());
 		outputText.set(sb.toString());
 		context.write(key, outputText);
 		sb.setLength(0);

@@ -11,18 +11,18 @@ import org.apache.hadoop.io.compress.DefaultCodec;
 import org.apache.hadoop.io.compress.SnappyCodec;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
-import com.jiaxing.global.Global;
 import com.jiaxing.mapper.PageRankMapper;
 import com.jiaxing.reducer.PageRankReducer;
 
 public class PageRankMain {
 	
 	public static final int ITER = 10;
+	public static final int NUM_REDUCER = 44;
+	public static final int BLOCK_SIZE = 201326592;
 	
 	public static void main(String[] args) throws Exception{
 		Configuration conf = new Configuration();
@@ -32,22 +32,24 @@ public class PageRankMain {
 			System.exit(2);
 		}
 		Path inputPath = null, outputPath = null;
+		
 		for(int i = 1; i <= ITER; ++i){
-			if(i == ITER){
-				conf.setBoolean(Global.DECODE, true);
-			}else{
-				conf.setBoolean(Global.DECODE, false);
-			}
+			conf.setInt("dfs.block.size", BLOCK_SIZE);
 			Job job = new Job(conf, "PageRank");
 			job.setJarByClass(PageRankMain.class);
 			job.setMapperClass(PageRankMapper.class);
 			job.setReducerClass(PageRankReducer.class);
+			//set to key value input format
+			job.setInputFormatClass(KeyValueTextInputFormat.class);
 			//set input format to sequence file
 			//job.setInputFormatClass(SequenceFileInputFormat.class);
 			//job.setOutputFormatClass(SequenceFileOutputFormat.class);
 			
 			job.setOutputKeyClass(Text.class);
 			job.setOutputValueClass(Text.class);
+			
+			//set number of reducers
+			job.setNumReduceTasks(NUM_REDUCER);
 			
 			if(i == 1){
 				inputPath = new Path(otherArgs[0]);

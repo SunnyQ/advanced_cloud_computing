@@ -10,11 +10,12 @@ import com.jiaxing.global.Global;
 import com.jiaxing.utils.Utils;
 
 public class PageRankReducer extends Reducer<Text, Text, Text, Text>{
-	private float p = 0;
+	private double p = 0;
 	private Text outputValue = new Text();
 	private StringBuilder sb = new StringBuilder();
 	private String node = null;
 	private boolean shouldDecode = false;
+	private static double DAMP_FACTOR = 0.85;
 	@Override
 	protected void reduce(Text key, Iterable<Text> values,
 			Context context)
@@ -31,38 +32,17 @@ public class PageRankReducer extends Reducer<Text, Text, Text, Text>{
 				//exists in the link
 				//isNode = true;
 			}else{
-				p += Float.parseFloat(array[0]);
+				p += Double.parseDouble(array[0]);
 			}
 		}
 		
-		sb.append(getPageRank(p, 0.85));
-		sb.append("\t");
-		//if(!shouldDecode){
-			sb.append(node == null ? "" : node);
-		/*
-		}else{
-			if(node == null){
-				sb.append("");
-			}else{
-				String[] links = node.split(",");
-				for(int i = 0; i < links.length; ++i){
-					sb.append(Utils.decodeUrl(links[i]));
-					if(i != links.length - 1){
-						sb.append(",");
-					}
-				}
-			}
-		}*/
-		outputValue.set(sb.toString());
-		String strKey = key.toString();
-		if(strKey.length() > 0){
-			if(!shouldDecode){
-				context.write(key, outputValue);
-			}else{
-				//key.set(Utils.decodeUrl(strKey));
-				context.write(key, outputValue);
-			}
+		sb.append(getPageRank(p, DAMP_FACTOR));
+		if(node != null){
+			sb.append("\t");
+			sb.append(node);
 		}
+		outputValue.set(sb.toString());
+		context.write(key, outputValue);
 		sb.setLength(0);
 		p = 0;
 		node = null;

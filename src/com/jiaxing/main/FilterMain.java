@@ -12,13 +12,16 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
 import com.jiaxing.mapper.DataFilterMapper;
 import com.jiaxing.reducer.DataFilterReducer;
 
 public class FilterMain {
+	
+	public static final int NUM_REDUCER = 44;
+	public static final int BLOCK_SIZE = 201326592;
+	
 	public static void main(String[] args) throws Exception{
 		Configuration conf = new Configuration();
 		String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
@@ -28,6 +31,12 @@ public class FilterMain {
 		}
 		
 		Job job = new Job(conf, "DataFilter");
+		
+		conf.setInt("dfs.block.size", BLOCK_SIZE);
+		
+		//set number of reducers
+		job.setNumReduceTasks(NUM_REDUCER);
+		
 		job.setJarByClass(FilterMain.class);
 		job.setMapperClass(DataFilterMapper.class);
 		job.setReducerClass(DataFilterReducer.class);
@@ -72,9 +81,18 @@ public class FilterMain {
 	}
 	
 	public static void addPaths(Job job, String prefix, int max) throws IOException{
+		String inPath = null;
 		for(int i = 0; i <= max; ++i){
-			String inpath = prefix + "metadata-000" + (i < 10 ? "0" + i : i);
-			FileInputFormat.addInputPaths(job, inpath);
+			if(i < 10){
+				inPath = prefix + "metadata-0000" + i;
+			}else
+				if(i < 100){
+					inPath = prefix + "metadata-000" + i;
+				}
+				else{
+					inPath = prefix + "metadata-00" + i;
+				}
+			FileInputFormat.addInputPaths(job, inPath);
 		}
 	}
 }

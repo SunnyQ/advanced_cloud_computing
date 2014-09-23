@@ -17,7 +17,7 @@ public class PageRankMapper extends Mapper<Text, Text, Text, Text>{
 			throws IOException, InterruptedException {
 		String[] array = value.toString().trim().split("\\s+", 2);
 		if(array.length > 1 && array[1].length() > 0){
-			float p = Float.parseFloat(array[0]);
+			double p = Double.parseDouble(array[0]);
 			String[] outputLinks = array[1].split(",");
 			outputValue.set(String.valueOf(p / outputLinks.length));
 			for(String link : outputLinks){
@@ -25,12 +25,11 @@ public class PageRankMapper extends Mapper<Text, Text, Text, Text>{
 				context.write(outputKey, outputValue);
 			}
 		}
-		outputKey = key;
-		if(array.length > 1){
+		if(array.length > 1 && array[1].length() > 0){
 			outputValue.set("-1\t" + array[1]);
 		}else{
 			outputValue.set("-1\t");
 		}
-		context.write(outputKey, outputValue);//kep the structure of the network
+		context.write(key, outputValue);//kep the structure of the network
 	}
 }
